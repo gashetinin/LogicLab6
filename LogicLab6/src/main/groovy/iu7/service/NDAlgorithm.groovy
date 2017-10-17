@@ -1,7 +1,5 @@
 package iu7.service
 
-import groovy.json.JsonBuilder
-
 interface NDAlgorithm {
 
     void readVars(def json_data)
