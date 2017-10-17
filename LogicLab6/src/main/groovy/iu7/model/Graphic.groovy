@@ -20,7 +20,7 @@ class Graphic {
     }
 
     def getX(int index) {
-        return x[index]
+        return x.get(index)
     }
 
     void addX(value) {
@@ -28,7 +28,7 @@ class Graphic {
     }
 
     def getY(int index) {
-        return y[index]
+        return y.get(index)
     }
 
     void addY(value) {
