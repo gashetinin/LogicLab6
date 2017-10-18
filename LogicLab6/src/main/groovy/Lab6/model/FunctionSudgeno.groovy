@@ -10,8 +10,6 @@ class FunctionSudgeno {
         this.id = json_data.id
         this.ka = json_data.ka
         this.kb = json_data.kb
-        this.k0 = json_data.k0
-        this.b0 = json_data.b0
         this.comment = json_data.comment
     }
 
