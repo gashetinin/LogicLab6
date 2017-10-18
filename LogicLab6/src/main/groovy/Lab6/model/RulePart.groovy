@@ -1,4 +1,4 @@
-package iu7.model
+package Lab6.model
 
 class RulePart {
     def var_sname

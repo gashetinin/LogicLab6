@@ -1,23 +1,21 @@
-package bmstu.ui7.web;
+package Lab6.web;
 
-import groovy.json.JsonOutput;
 import groovy.util.logging.Slf4j;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
-import iu7.service.Mamdani;
-import iu7.service.Sudgeno;
+import Lab6.service.Sudgeno;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/mamdani")
+@RequestMapping("/sudgeno")
 @Slf4j
-public class LogicControllerMamdani {
+public class LogicControllerSudgeno {
     @Autowired
-    private Mamdani mamdani;
+    private Sudgeno sudgeno;
 
     @ApiOperation(value = "Считывание лингвистических переменных", tags = "readV", authorizations = @Authorization("basic"))
     @ApiResponses({
@@ -26,7 +24,7 @@ public class LogicControllerMamdani {
     })
     @PostMapping("/vars")
     void readV(@RequestBody Object data) {
-        mamdani.readVars(data);
+        sudgeno.readVars(data);
     }
 
     @ApiOperation(value = "Считывание правил", tags = "readR", authorizations = @Authorization("basic"))
@@ -36,7 +34,8 @@ public class LogicControllerMamdani {
     })
     @PostMapping("/rules")
     void readR(@RequestBody Object data) {
-        mamdani.readRule(data);
+        sudgeno.readRule(data);
+
     }
 
     @ApiOperation(value = "Считывание функций", tags = "readF", authorizations = @Authorization("basic"))
@@ -46,7 +45,8 @@ public class LogicControllerMamdani {
     })
     @PostMapping("/funcs")
     void readF(@RequestBody Object data) {
-        mamdani.readFunction(data);
+        sudgeno.readFunction(data);
+
     }
 
     @ApiOperation(value = "Обратный логиченский вывод", tags = "checkLogic", authorizations = @Authorization("basic"))
@@ -56,27 +56,17 @@ public class LogicControllerMamdani {
     })
     @GetMapping("/checkLogic?h={h_value}&d={d_value}")
     double checkLogic(@PathVariable("h_value") double h, @PathVariable("d_value") double d) {
-        return mamdani.calculate(h,d,"m");
+        return sudgeno.calculate(h,d,"m");
     }
 
-    @ApiOperation(value = "Обратный логиченский вывод", tags = "checkLogic", authorizations = @Authorization("basic"))
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "ok", response = ResponseEntity.class),
-            @ApiResponse(code = 500, message = "Неверный формат данных", response = ResponseEntity.class),
-    })
     @GetMapping("/getVarGraphics")
     Object getVarGraphics() {
-        return mamdani.getGraphicsForVar();
+        return sudgeno.getGraphicsForVar();
     }
 
     @GetMapping("/getRuleGraphics")
     Object getRuleGraphics() {
-        return mamdani.getGraphicsForRule();
-    }
-
-    @GetMapping("/getResultGraphics")
-    Object getResultGraphics() {
-        return mamdani.getGraphicsTotal();
+        return sudgeno.getGraphicsForRule();
     }
 
 }

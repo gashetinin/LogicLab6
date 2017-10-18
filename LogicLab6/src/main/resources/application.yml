@@ -1,9 +1,7 @@
 spring:
-  application:
-    name: Lab6ND
   messages:
     basename: messages/messages
 
 server:
-  port: 8086
-  context-path: /
+  port: 8886
+  servlet-path: /

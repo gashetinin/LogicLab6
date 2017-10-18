@@ -1,20 +1,21 @@
-package iu7.service
+package Lab6.service
 
 import groovy.json.JsonBuilder
-import iu7.model.FunctionMamdani
-import iu7.model.Graphic
-import iu7.model.Rule
-import iu7.model.Variable
 import groovy.json.JsonSlurper
+import Lab6.model.FunctionSudgeno
+import Lab6.model.Graphic
+import Lab6.model.Rule
+import Lab6.model.Variable
+import org.springframework.stereotype.Service
 
-class Mamdani implements NDAlgorithm{
+@Service
+class SudgenoImpl implements Sudgeno{
     ArrayList<Variable> vars
     ArrayList<Rule> rules
-    ArrayList<FunctionMamdani> funcs
+    ArrayList<FunctionSudgeno> funcs
 
     ArrayList<Graphic> graphicsForVar
-    ArrayList<Graphic> graphicsForRule
-    Graphic graphicsTotal
+    ArrayList graphicsForRule
 
     def getGraphicsForVar() {
         return new JsonBuilder( graphicsForVar ).toPrettyString()
@@ -25,10 +26,10 @@ class Mamdani implements NDAlgorithm{
     }
 
     def getGraphicsTotal() {
-        return new JsonBuilder( graphicsTotal ).toPrettyString()
+        return null
     }
 
-    Mamdani() {
+    SudgenoImpl() {
     }
 
     void readVars(def json_data) {
@@ -43,7 +44,7 @@ class Mamdani implements NDAlgorithm{
         funcs = new ArrayList<>()
         def data = json_data.funcs
         for (int i = 0; i < data.size(); i++) {
-            funcs.add(new FunctionMamdani(data[i]))
+            funcs.add(new FunctionSudgeno(data[i]))
         }
     }
 
@@ -56,24 +57,26 @@ class Mamdani implements NDAlgorithm{
     }
 
     double calculate(def h, def d, def result_sname) {
-        graphicsForVar = new ArrayList<>()
-        graphicsForRule = new ArrayList<>()
-        graphicsTotal = new Graphic()
+        ArrayList<Graphic> graphicsForVar = new ArrayList<>()
+        ArrayList<Graphic> graphicsForRule = new ArrayList<>()
         getGraphicsForVar("h",0,200,1)
         getGraphicsForVar("d",0,200,1)
         getGraphicsForVar("m",0,200,1)
 
         def json_data = new JsonSlurper().parseText('[{ "sname" : "h", "value" : '+ h + '}, {"sname" : "d", "value" : ' + d + '}]')
         def fuzzy_values = getFuzzyForVar(json_data)
-        getGraphicsForRule(fuzzy_values,0,200,1)
+
+        //println fuzzy_values
         def mins = []
         for (int i = 0; i < fuzzy_values.size(); i++) {
             mins.add(findMin(fuzzy_values[i]))
         }
+
         //println mins
-        def maxs = calcResultArray(mins,result_sname)
+        def line_values = calcResultArray(json_data[0].value, json_data[1].value)
+        getGraphicsForRule(fuzzy_values, line_values,0,200,1)
         //println maxs
-        def value = calcResult(maxs,result_sname)
+        def value = calcResult(mins, line_values)
         return value
 
     }
@@ -105,7 +108,7 @@ class Mamdani implements NDAlgorithm{
         return fuzzy_values
     }
 
-    def findMin(def fuzzy_array){
+    def findMin(def fuzzy_array) {
         def min = fuzzy_array[0]
         for (int i = 1; i < fuzzy_array.size(); i++)
             if (min > fuzzy_array[i])
@@ -113,66 +116,33 @@ class Mamdani implements NDAlgorithm{
         return min;
     }
 
-    def calcResultArray(def mins, def result_sname) {
-        def funcs_id = []
-        for (int i = 0; funcs_id.size() == 0 && i < vars.size(); i++)
-            if (vars.get(i).sname == result_sname)
-                funcs_id = vars.get(i).funcs
-
-        def results = []
-        for (int i = 0; i < funcs_id.size(); i++) {
-            def max = 0;
-            for (int j = 0; j < rules.size(); j++)
-                if (rules.get(j).consequence.var == result_sname && rules.get(j).consequence.func == funcs_id[i] && max < mins[i])
-                    max = mins[i]
-            results.add(max)
+    def calcResultArray(def x, def y) {
+        def line_values = []
+        for (int i = 0; i < rules.size(); i++) {
+            def func_id = rules.get(i).consequence.func
+            def n_calculated = true
+            for (int j = 0; n_calculated && j < funcs.size(); j++)
+                if (funcs.get(j).id == func_id) {
+                    line_values.add(funcs.get(i).calculateLine(x,y))
+                    n_calculated = false
+                }
         }
-        return results
+        return line_values
     }
 
-    def calcResult(def maxs, def result_sname) {
-        def funcs_id = []
-        for (int i = 0; funcs_id.size() == 0 && i < vars.size(); i++)
-            if (vars.get(i).sname == result_sname)
-                funcs_id = vars.get(i).funcs
-
-        def x0 = 0
-        def x1 = 0
-        def h = 0.01
-        for (int i = 0; i < funcs_id.size(); i++)
-            for (int j = 0; j < funcs.size(); j++) {
-                if (funcs.get(j).id == funcs_id.get(i)) {
-                    if (funcs.get(j).a < x0)
-                        x0 = funcs.get(j).a
-                    if (funcs.get(j).d > x1)
-                        x1 = funcs.get(j).d
-                }
-            }
-
-
-
-        def x = x0
-        def integral = 0
-        while (x <= x1) {
-            def maxy = 0
-            for (int i = 0; i < funcs_id.size(); i++)
-                for (int j = 0; j < funcs.size(); j++) {
-                    if (funcs.get(j).id == funcs_id.get(i)) {
-                        def y = funcs.get(j).calculateValueWithMax(x, maxs[i])
-                        if (y > maxy)
-                            maxy = y
-                    }
-                }
-
-            integral = integral + h * maxy
-            graphicsTotal.addX(x)
-            graphicsTotal.addY(maxy)
-            x = x + h
+    def calcResult(def mins, def line_values) {
+        def w_sum = 0
+        def weights = 0
+        for (int i = 0; i < mins.size(); i++) {
+            w_sum += mins[i]*line_values[i]
+            weights += mins[i]
         }
-        return integral
+        return (double)w_sum/weights
     }
 
     void getGraphicsForVar(def sname, def startX, def endX, def stepX) {
+        ArrayList<Graphic> graphicsForVar = new ArrayList<>()
+
         def graphics_id = []
         for (int i = 0; i < vars.size(); i++)
             if (vars.get(i).sname == sname)
@@ -181,9 +151,11 @@ class Mamdani implements NDAlgorithm{
         for (int i = 0; i < funcs.size(); i++ )
             if (funcs.get(i).id in graphics_id)
                 graphicsForVar.add(funcs.get(i).getArray(startX,endX,stepX))
+
+        new JsonBuilder( graphic ).toPrettyString()
     }
 
-    void getGraphicsForRule(def fuzzy_values, def startX, def endX, def stepX) {
+    void getGraphicsForRule(def fuzzy_values, def line_values, def startX, def endX, def stepX) {
         for (int i = 0; i < rules.size(); i++) {
             def pre = rules.get(i).precondition
             def graphic_group = []
@@ -199,15 +171,11 @@ class Mamdani implements NDAlgorithm{
                         graphic_group.add(graphic)
                     }
             }
-            def func_id = rules.get(i).consequence.func
-            for (int k = 0; k < funcs.size(); k++)
-                if (funcs.get(k).id == func_id) {
-                    Graphic graphic = funcs.get(k).getArray(startX,endX,stepX)
-                    graphic.setAlpha(min)
-                    graphic_group.add(graphic)
-                }
+            graphic_group.add(line_values.get(i))
             graphicsForRule.add(graphic_group)
         }
     }
 
+
 }
+

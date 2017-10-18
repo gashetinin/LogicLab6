@@ -1,4 +1,4 @@
-package bmstu.iu7;
+package Lab6;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

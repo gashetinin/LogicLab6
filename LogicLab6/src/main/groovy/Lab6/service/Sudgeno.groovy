@@ -1,6 +1,6 @@
-package iu7.service
+package Lab6.service
 
-interface NDAlgorithm {
+interface Sudgeno {
 
     void readVars(def json_data)
 
