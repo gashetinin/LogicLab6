@@ -102,4 +102,57 @@ public class LogicControllerMamdaniTest {
         //   log.info("graphics ${responseEntity.getBody()}");
 
     }
+
+    @Test
+    public void test2() {
+        ResponseEntity responseEntity = restTemplate.postForEntity("/mamdani/vars", vars, Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+        responseEntity = restTemplate.postForEntity("/mamdani/funcs", funcs, Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+        responseEntity = restTemplate.postForEntity("/mamdani/rules", rules, Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+
+        responseEntity = restTemplate.getForEntity("/mamdani/checkLogic/10/10", Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+
+        responseEntity = restTemplate.getForEntity("/mamdani/checkLogic/10/20", Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+
+        responseEntity = restTemplate.getForEntity("/mamdani/checkLogic/10/30", Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+
+        responseEntity = restTemplate.getForEntity("/mamdani/checkLogic/20/10", Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+
+        responseEntity = restTemplate.getForEntity("/mamdani/checkLogic/20/20", Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+
+        responseEntity = restTemplate.getForEntity("/mamdani/checkLogic/20/30", Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+
+        responseEntity = restTemplate.getForEntity("/mamdani/checkLogic/30/10", Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+
+        responseEntity = restTemplate.getForEntity("/mamdani/checkLogic/30/20", Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+
+        responseEntity = restTemplate.getForEntity("/mamdani/checkLogic/30/30", Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+
+    }
+
+    @Test
+    public void test3() {
+        ResponseEntity responseEntity = restTemplate.postForEntity("/mamdani/vars", vars, Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+        responseEntity = restTemplate.postForEntity("/mamdani/funcs", funcs, Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+        responseEntity = restTemplate.postForEntity("/mamdani/rules", rules, Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+
+        responseEntity = restTemplate.getForEntity("/mamdani/checkLogic/80/100", Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+
+    }
+
 }

@@ -125,8 +125,8 @@ class MamdaniImpl implements Mamdani{
         for (int i = 0; i < funcs_id.size(); i++) {
             def max = 0;
             for (int j = 0; j < rules.size(); j++)
-                if (rules.get(j).consequence.var == result_sname && rules.get(j).consequence.func == funcs_id[i] && max < mins[i])
-                    max = mins[i]
+                if (rules.get(j).consequence.var == result_sname && rules.get(j).consequence.func == funcs_id[i] && max < mins[j])
+                    max = mins[j]
             results.add(max)
         }
         return results

@@ -54,7 +54,8 @@ public class LogicControllerMamdani {
     })
     @GetMapping("/checkLogic/{h_value}/{d_value}")
     Double checkLogic(@PathVariable("h_value") double h, @PathVariable("d_value") double d) {
-        return mamdani.calculate(h,d,"m");
+        Double m = mamdani.calculate(h,d,"m");
+        return m;
     }
 
     @ApiOperation(value = "Обратный логиченский вывод", tags = "checkLogic")
