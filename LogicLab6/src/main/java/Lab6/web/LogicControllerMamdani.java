@@ -52,8 +52,8 @@ public class LogicControllerMamdani {
             @ApiResponse(code = 200, message = "ok", response = ResponseEntity.class),
             @ApiResponse(code = 500, message = "Неверный формат данных", response = ResponseEntity.class),
     })
-    @GetMapping("/checkLogic?h={h_value}&d={d_value}")
-    double checkLogic(@PathVariable("h_value") double h, @PathVariable("d_value") double d) {
+    @GetMapping("/checkLogic/{h_value}/{d_value}")
+    Double checkLogic(@PathVariable("h_value") double h, @PathVariable("d_value") double d) {
         return mamdani.calculate(h,d,"m");
     }
 

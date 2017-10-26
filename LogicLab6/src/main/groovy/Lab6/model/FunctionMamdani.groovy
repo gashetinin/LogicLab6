@@ -88,6 +88,7 @@ class FunctionMamdani {
         while (x0 < endX + stepX/2) {
             graphic.addX(x0)
             graphic.addY(calculateValue(x0))
+            x0 = x0 + stepX
         }
         return graphic
 

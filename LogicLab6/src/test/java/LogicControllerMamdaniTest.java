@@ -1,5 +1,6 @@
 import Lab6.NDlab6Application;
 
+import groovy.util.logging.Slf4j;
 import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +21,7 @@ import java.io.FileReader;
 
 import static org.junit.Assert.assertEquals;
 
+@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -77,6 +79,27 @@ public class LogicControllerMamdaniTest {
     }
 
 
+    @Test
+    public void test1() {
+        ResponseEntity responseEntity = restTemplate.postForEntity("/mamdani/vars", vars, Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+        responseEntity = restTemplate.postForEntity("/mamdani/funcs", funcs, Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+        responseEntity = restTemplate.postForEntity("/mamdani/rules", rules, Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
 
+        responseEntity = restTemplate.getForEntity("/mamdani/checkLogic/10/20", Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
 
+        responseEntity = restTemplate.getForEntity("/mamdani/getVarGraphics", Object.class);
+        //       log.info("graphics ${responseEntity.getBody()}");
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+        responseEntity = restTemplate.getForEntity("/mamdani/getRuleGraphics", Object.class);
+        //     log.info("graphics ${responseEntity.getBody()}");
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+        responseEntity = restTemplate.getForEntity("/mamdani/getResultGraphics", Object.class);
+        assertEquals(org.springframework.http.HttpStatus.OK, responseEntity.getStatusCode());
+        //   log.info("graphics ${responseEntity.getBody()}");
+
+    }
 }
